@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Kahoot Raider - by er.guindilla</title>
+  <style>
+    /* ====== RESET ====== */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(180deg, #6a4bb8, #2a1a66);
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* ====== BARRA SUPERIOR ====== */
+    .title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      height: 30px;
+      background-color: #2a1a66;
+      padding: 5px 10px;
+      color: #fff;
+      position: absolute;
+      top:0;
+      left:0;
+      -webkit-app-region: drag;
+      border-radius: 8px 8px 0 0;
+      z-index: 1000;
+    }
+    .title { font-weight:bold; font-size:1.2em; }
+    .window-controls { display:flex; gap:5px; height:100%; align-items:center; }
+    .control-btn {
+      background-color: #3f2a92;
+      color:#fff;
+      border:none;
+      border-radius:4px;
+      width:24px;
+      height:24px;
+      font-size:12px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0;
+      -webkit-app-region: no-drag;
+      transition: all 0.2s ease;
+    }
+    .control-btn:hover { background-color:#9c7de5; transform:scale(1.2); }
+    .control-btn:active { background-color:#7a5cc4; transform:scale(0.9); }
+
+    /* ====== OVERLAY DE KEYS ====== */
+    #key-overlay {
+      position: fixed;
+      top:30px;
+      left:0;
+      width:100%;
+      height:calc(100% - 30px);
+      background-color: rgba(42,26,102,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index:900;
+    }
+    .key-box {
+      background: linear-gradient(135deg,#3f2a92,#6a4bb8);
+      padding: 40px 60px;
+      border-radius:18px;
+      text-align:center;
+      box-shadow:0 15px 40px rgba(0,0,0,0.6),0 0 30px rgba(156,125,229,0.4);
+      border:2px solid #9c7de5;
+      max-width:400px;
+      width:85%;
+      position: relative;
+    }
+    .key-box h2 { margin-bottom:25px; font-size:1.8em; }
+    .key-box input[type="text"], .main-box input[type="text"], .main-box input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 12px;
+      border: 2px solid #b8a3e4;
+      background-color: #553b9a;
+      color: #fff;
+      font-size: 1em;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .key-box input:focus, .main-box input:focus { border-color:#f5f5f5; background-color:#6a4bb8; outline:none; }
+    .key-box button, .main-box button {
+      background-color: #9c7de5;
+      color:#fff;
+      border:none;
+      padding:12px 28px;
+      font-size:1.15em;
+      border-radius:12px;
+      cursor:pointer;
+      transition: all 0.3s ease;
+      margin-top:20px;
+    }
+    .key-box button:hover, .main-box button:hover { background-color:#7a5cc4; transform:scale(1.05); }
+    .key-box button:active, .main-box button:active { background-color:#6a4b9a; transform:scale(0.95); }
+
+    /* ====== CONTENIDO PRINCIPAL ====== */
+    #main-content {
+      position: fixed;
+      top:30px;
+      left:0;
+      width:100%;
+      height:calc(100% - 30px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index:500;
+      flex-direction: column;
+    }
+    .main-box {
+      background: linear-gradient(135deg,#3f2a92,#6a4bb8);
+      padding: 20px 30px;
+      border-radius:15px;
+      text-align:center;
+      box-shadow:0 10px 25px rgba(0,0,0,0.6),0 0 20px rgba(156,125,229,0.4);
+      border:2px solid #9c7de5;
+      max-width:300px;
+      width:80%;
+      display:flex;
+      flex-direction: column;
+      gap:10px;
+    }
+    .main-box input[type="text"], .main-box input[type="number"] {
+      padding:8px;
+      font-size:0.9em;
+    }
+    .main-box button {
+      padding:8px 20px;
+      font-size:0.95em;
+    }
+    #output {
+      max-height:150px;
+      overflow:auto;
+      display:none;
+      text-align:left;
+      margin-top:10px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+
+  <!-- Barra de título -->
+  <div class="title-bar">
+    <div class="title">Kahoot Raider</div>
+    <div class="window-controls">
+      <button id="minimize-btn" class="control-btn">_</button>
+      <button id="maximize-btn" class="control-btn">☐</button>
+      <button id="close-btn" class="control-btn">X</button>
+    </div>
+  </div>
+
+  <!-- Overlay de clave -->
+  <div id="key-overlay">
+    <div class="key-box">
+      <h2>Introduce tu clave</h2>
+      <input type="text" id="key-input" placeholder="NAI-xxxxx">
+      <button id="key-submit">Verificar</button>
+      <p id="key-error" style="color:red; display:none;">Clave incorrecta</p>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div id="main-content" style="display:none;">
+    <div class="main-box">
+      <h1 style="font-size:1.2em;">By er.guindilla on Discord</h1>
+
+      <label style="font-size:0.9em;">Código PIN del Kahoot:</label>
+      <input type="text" id="pin" placeholder="El pin del kahoot" required>
+
+      <label style="font-size:0.9em;">¿Cuántos bots quieres enviar?:</label>
+      <input type="number" id="count" placeholder="Número de bots" required>
+
+      <label style="font-size:0.9em;">Nombre base:</label>
+      <input type="text" id="base" placeholder="El nombre del bot" required>
+
+      <button id="start-btn">🚀 Iniciar</button>
+      <pre id="output"></pre>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Lógica de verificación de clave
+  const overlay = document.getElementById("key-overlay");
+  const mainContent = document.getElementById("main-content");
+  const keyInput = document.getElementById("key-input");
+  const keySubmit = document.getElementById("key-submit");
+  const keyError = document.getElementById("key-error");
+
+  keySubmit.addEventListener("click", async () => {
+    const key = keyInput.value.trim();
+    if (!key) {
+      keyError.textContent = "Introduce una clave";
+      keyError.style.display = "block";
+      return;
+    }
+
+    const result = await window.electronAPI.verifyKey(key);
+
+    if (result.valid) {
+      overlay.style.display = "none";
+      mainContent.style.display = "flex";
+      keyError.style.display = "none";
+    } else {
+      keyError.textContent = result.message;
+      keyError.style.display = "block";
+    }
+  });
+
+  // Botones de la barra de título
+  document.getElementById("minimize-btn").addEventListener("click", () => {
+    window.electronAPI.windowControl("minimize");
+  });
+  document.getElementById("maximize-btn").addEventListener("click", () => {
+    window.electronAPI.windowControl("maximize");
+  });
+  document.getElementById("close-btn").addEventListener("click", () => {
+    window.electronAPI.windowControl("close");
+  });
+
+  // Función para iniciar bots
+  document.getElementById("start-btn").addEventListener("click", async () => {
+    const pin = document.getElementById("pin").value.trim();
+    const count = parseInt(document.getElementById("count").value);
+    const base = document.getElementById("base").value || "SuperIdol";
+
+    if (!pin || isNaN(count) || count <= 0) {
+      alert("Introduce un PIN válido y un número de bots mayor que 0");
+      return;
+    }
+
+    document.getElementById("output").style.display = "block";
+    await window.electronAPI.startBots({ pin, count, base });
+  });
+</script>
+
+</body>
+</html>

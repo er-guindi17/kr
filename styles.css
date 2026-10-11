@@ -1,0 +1,237 @@
+/* ====== RESET DE ESTILOS ====== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ====== FONDO GENERAL ====== */
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(180deg, #6a4bb8, #2a1a66);
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeInBody 1.5s ease-in-out;
+}
+
+@keyframes fadeInBody {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ====== CONTENEDOR PRINCIPAL ====== */
+#app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* ====== BARRA SUPERIOR ====== */
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 30px;
+  background-color: #2a1a66;
+  padding: 5px 10px;
+  color: #fff;
+  border-radius: 8px 8px 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-app-region: drag;
+  z-index: 1000;
+  animation: slideInFromTop 0.8s ease-out;
+}
+
+@keyframes slideInFromTop {
+  0% { transform: translateY(-50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.window-controls {
+  display: flex;
+  gap: 5px;
+  height: 100%;
+  align-items: center;
+}
+
+.control-btn {
+  background-color: #3f2a92;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  -webkit-app-region: no-drag;
+}
+
+.control-btn:hover { background-color: #9c7de5; transform: scale(1.2); }
+.control-btn:active { background-color: #7a5cc4; transform: scale(0.9); }
+
+/* ====== OVERLAY DE KEYS ====== */
+#key-overlay {
+  position: fixed;
+  top: 30px;                 /* deja visible la barra superior */
+  left: 0;
+  width: 100%;
+  height: calc(100% - 30px);
+  background-color: rgba(42, 26, 102, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 900;
+  pointer-events: auto;
+  animation: fadeInOverlay 0.8s ease-out;
+}
+
+.key-box {
+  background: linear-gradient(135deg, #3f2a92, #6a4bb8);
+  padding: 40px 60px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 30px rgba(156,125,229,0.4);
+  border: 2px solid #9c7de5;
+  animation: popInOverlayBox 0.6s ease-out;
+  max-width: 400px;
+  width: 85%;
+  position: relative;
+  overflow: hidden;
+}
+
+.key-box::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+  animation: shimmer 3s infinite linear;
+  pointer-events: none;
+}
+
+.key-box h2 {
+  color: #f5f5f5;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+  font-weight: bold;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+  animation: fadeInText 0.8s ease-out;
+}
+
+.key-box input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 12px;
+  border: 2px solid #b8a3e4;
+  background-color: #553b9a;
+  color: #fff;
+  font-size: 1em;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.key-box input[type="text"]:focus {
+  border-color: #f5f5f5;
+  background-color: #6a4bb8;
+  outline: none;
+}
+
+.key-box button {
+  background-color: #9c7de5;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  font-size: 1.15em;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.key-box button:hover { 
+  background-color: #7a5cc4; 
+  transform: scale(1.05); 
+}
+.key-box button:active { 
+  background-color: #6a4b9a; 
+  transform: scale(0.95); 
+}
+
+/* ====== OVERLAY PRINCIPAL ====== */
+#main-overlay {
+  position: fixed;
+  top: 30px;                 /* debajo de la barra superior */
+  left: 0;
+  width: 100%;
+  height: calc(100% - 30px);
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  z-index: 800;
+}
+
+.main-box {
+  background: linear-gradient(135deg, #3f2a92, #6a4bb8);
+  padding: 40px 60px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 30px rgba(156,125,229,0.4);
+  border: 2px solid #9c7de5;
+  animation: popInOverlayBox 0.6s ease-out;
+  max-width: 400px;
+  width: 85%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* ====== ANIMACIONES COMPARTIDAS ====== */
+@keyframes fadeInOverlay {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes popInOverlayBox {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { transform: rotate(0deg) translateX(-50%) translateY(-50%); }
+  100% { transform: rotate(360deg) translateX(-50%) translateY(-50%); }
+}
+
+@keyframes fadeInText {
+  0% { opacity: 0; transform: translateY(-12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInBox {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
