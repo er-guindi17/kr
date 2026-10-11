@@ -1,0 +1,15 @@
+{
+  "name": "kr-local-lobby-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simulador local de sala de ensayo; no se conecta a Kahoot ni a servicios externos.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "dev": "node --watch main.js",
+    "test": "node --test test/server.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
